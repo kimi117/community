@@ -1,9 +1,11 @@
 package com.example.life_community.controller;
 
 import com.example.life_community.dto.GiteeAccessTokenDTO;
+import com.example.life_community.model.User;
 import com.example.life_community.provider.GitHubProvider;
 import com.example.life_community.provider.GiteeProvider;
 import com.example.life_community.provider.GiteeUser;
+import com.example.life_community.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.UUID;
 
 @Controller
 public class AuthorizeController {
@@ -19,6 +23,8 @@ public class AuthorizeController {
     GitHubProvider gitHubProvider;
     @Autowired
     GiteeProvider giteeProvider;
+    @Autowired
+    UserMapper userMapper;
 
     @Value("${github.client.id}")
     private String clientId;
@@ -47,6 +53,17 @@ public class AuthorizeController {
 
         if(giteeUser != null) {
             request.getSession().setAttribute("user", giteeUser);// session 从 HttpServletRequest 获取
+
+            Date date = new Date();
+
+            // Ctrl+Alt+v
+            User user = new User();
+            user.setName(giteeUser.getName());
+            user.setToken(UUID.randomUUID().toString());
+            user.setAccountId(String.valueOf(giteeUser.getId()));
+            user.setGmtCreate(System.currentTimeMillis());
+            user.setGmtModified(user.getGmtCreate());
+            userMapper.insert(user);
             return "redirect:/";
             // 登录成功，写 Cookie 和 Session
         } else {
