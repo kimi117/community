@@ -11,7 +11,7 @@ public interface UserMapper {
 
     // interface 默认 public
 
-    @Insert("INSERT INTO USER(name, account_id, token, gmt_create, gmt_modified) values(#{name}, #{accountId}, #{token}, #{gmtCreate}, #{gmtModified})")
+    @Insert("INSERT INTO USER(name, account_id, token, gmt_create, gmt_modified, avatar_url) values(#{name}, #{accountId}, #{token}, #{gmtCreate}, #{gmtModified}, #{avatarUrl})")
     void insert(User user);
 
     @Select("SELECT * FROM USER WHERE token = #{token}")

@@ -1,5 +1,6 @@
 package com.example.life_community.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.example.life_community.dto.GiteeAccessTokenDTO;
 import com.example.life_community.model.User;
 import com.example.life_community.provider.GitHubProvider;
@@ -66,6 +67,8 @@ public class AuthorizeController {
             user.setAccountId(String.valueOf(giteeUser.getId()));
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
+            user.setAvatarUrl(giteeUser.getAvatar_url());
+            System.out.println("Login User JSON：" + JSON.toJSONString(user));
             userMapper.insert(user);
 
             // 当登录成功后，将获取到的用户信息及生成 Token 存储到数据库
