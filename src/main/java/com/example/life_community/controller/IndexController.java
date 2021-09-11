@@ -19,6 +19,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+// 首页
 @Controller
 public class IndexController {
 
@@ -30,21 +31,6 @@ public class IndexController {
 
     @GetMapping("/")
     public String index(@RequestParam(name = "page", defaultValue = "1") Integer page, @RequestParam(name = "size", defaultValue = "5") Integer size, HttpServletRequest request, Model model) {
-
-        Cookie[] cookies = request.getCookies();
-        if(cookies!=null && cookies.length>0) {
-            for (Cookie cookie : cookies) {
-                if(cookie.getName().equals("loginToken")) {
-                    String token = cookie.getValue();
-                    User user = userMapper.findByToken(token);
-                    System.out.println("user JSON：" + JSON.toJSONString(user));
-                    if(user != null){
-                        request.getSession().setAttribute("user", user);
-                    }
-                    break;
-                }
-            }
-        }
 
         PaginationDTO paginationDTO = questionService.list(page, size);
         model.addAttribute("paginationDTO", paginationDTO);

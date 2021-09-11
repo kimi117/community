@@ -18,19 +18,22 @@ public class PaginationDTO {
     private Integer totalPage;
 
     // 计算
-    public void setPagination(Integer totalCount, Integer page, Integer size) {
+    public void setPagination(Integer totalPage, Integer page) {
 
         // 计算总页码
-        if(totalCount % size == 0) {
-            totalPage = totalCount / size;
-        } else {
-            totalPage = totalCount / size + 1;
-        }
+//        if(totalCount % size == 0) {
+//            totalPage = totalCount / size;
+//        } else {
+//            totalPage = totalCount / size + 1;
+//        }
+
 
         // 容错
-        if(page < 1) page = 1;
-        if(page > totalPage) page = totalPage;
+//        if(page < 1) page = 1;
+//        if(page > totalPage) page = totalPage;
+
         this.page = page;
+        this.totalPage = totalPage;
 
         // 计算 pages
         /*

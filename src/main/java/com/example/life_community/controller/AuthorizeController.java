@@ -7,6 +7,7 @@ import com.example.life_community.provider.GitHubProvider;
 import com.example.life_community.provider.GiteeProvider;
 import com.example.life_community.provider.GiteeUser;
 import com.example.life_community.mapper.UserMapper;
+import com.example.life_community.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.UUID;
 
+// 授权登录操作
 @Controller
 public class AuthorizeController {
 
@@ -27,7 +29,7 @@ public class AuthorizeController {
     @Autowired
     GiteeProvider giteeProvider;
     @Autowired
-    UserMapper userMapper;
+    UserService userService;
 
     @Value("${github.client.id}")
     private String clientId;
@@ -65,11 +67,10 @@ public class AuthorizeController {
             String token = UUID.randomUUID().toString();
             user.setToken(token);
             user.setAccountId(String.valueOf(giteeUser.getId()));
-            user.setGmtCreate(System.currentTimeMillis());
-            user.setGmtModified(user.getGmtCreate());
             user.setAvatarUrl(giteeUser.getAvatar_url());
             System.out.println("Login User JSON：" + JSON.toJSONString(user));
-            userMapper.insert(user);
+
+            userService.createOrUpdate(user);
 
             // 当登录成功后，将获取到的用户信息及生成 Token 存储到数据库
             // 并 Token 存储 Cookie
@@ -112,5 +113,17 @@ public class AuthorizeController {
             return "redirect:/";
         }
     }*/
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
+        // 清除 Session
+        request.getSession().removeAttribute("user");
+        // 移除 Cookie
+        Cookie cookie = new Cookie("loginToken", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return "redirect:/";
+    }
 
 }

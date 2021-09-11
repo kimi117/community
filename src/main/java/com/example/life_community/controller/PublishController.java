@@ -1,21 +1,22 @@
 package com.example.life_community.controller;
 
-import com.alibaba.fastjson.JSON;
+import com.example.life_community.dto.QuestionDTO;
 import com.example.life_community.mapper.QuestionMapper;
 import com.example.life_community.mapper.UserMapper;
 import com.example.life_community.model.Question;
 import com.example.life_community.model.User;
+import com.example.life_community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+// 发布
 @Controller
 public class PublishController {
 
@@ -23,6 +24,8 @@ public class PublishController {
     QuestionMapper questionMapper;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    QuestionService questionService;
 
     // 跳转指定页面
     @GetMapping("/publish")
@@ -32,8 +35,9 @@ public class PublishController {
 
     // 表单提交请求
     @PostMapping("/publish")
-    public String doPublish(@RequestParam("title") String title, @RequestParam("description") String description, @RequestParam("tag") String tag, HttpServletRequest request, Model model) {
+    public String doPublish(@RequestParam(name = "id", required = false) Integer id, @RequestParam(name = "title", required = false) String title, @RequestParam(name = "description", required = false) String description, @RequestParam(name = "tag", required = false) String tag, HttpServletRequest request, Model model) {
 
+        model.addAttribute("id", id);
         model.addAttribute("title", title);
         model.addAttribute("description", description);
         model.addAttribute("tag", tag);
@@ -51,21 +55,7 @@ public class PublishController {
             return "publish";
         }
 
-        User user = null;
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null && cookies.length > 0) {
-            for (Cookie cookie : cookies) {
-                if(cookie.getName().equals("loginToken")) {
-                    String token = cookie.getValue();
-                    user = userMapper.findByToken(token);
-                    if(user != null && user.getId() != null){
-                        System.out.println("user JSON：" + JSON.toJSONString(user));
-                        request.getSession().setAttribute("user", user);
-                    }
-                    break;
-                }
-            }
-        }
+        User user = (User) request.getSession().getAttribute("user");
 
         if(user == null) {
             model.addAttribute("error", "用户未登录");
@@ -73,16 +63,25 @@ public class PublishController {
         }
 
         Question question = new Question();
+        question.setId(id);// 更新时候才有
         question.setTitle(title);
         question.setDescription(description);
         question.setTag(tag);
         question.setCreator(user.getId());
-        question.setGmtCreate(System.currentTimeMillis());
-        question.setGmtModified(System.currentTimeMillis());
 
-        questionMapper.create(question);
+//        questionMapper.create(question);
+        questionService.createOrUpdate(question);
 
         return "redirect:/";
+    }
+
+    // 跳转编辑页面，回显问题数据
+    @GetMapping("/publish/{id}")
+    public String edit(@PathVariable(name = "id") Integer id, Model model) {
+
+        QuestionDTO questionDTOInfo = questionService.getById(id);
+        model.addAttribute("questionDTOInfo", questionDTOInfo);
+        return "publish";
     }
 
 }
