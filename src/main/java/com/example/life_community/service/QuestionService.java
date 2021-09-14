@@ -3,6 +3,8 @@ package com.example.life_community.service;
 import com.alibaba.fastjson.JSON;
 import com.example.life_community.dto.PaginationDTO;
 import com.example.life_community.dto.QuestionDTO;
+import com.example.life_community.exception.CustomizeException;
+import com.example.life_community.exception.ECustomizeErrorCode;
 import com.example.life_community.mapper.QuestionMapper;
 import com.example.life_community.mapper.UserMapper;
 import com.example.life_community.model.Question;
@@ -123,8 +125,8 @@ public class QuestionService {
             return questionDTO;
         } else {
             System.out.println("lzb question：" + JSON.toJSONString(question));
+            throw new CustomizeException(ECustomizeErrorCode.QUESTION_NOT_FOUND);
         }
-        return null;
     }
 
     public void createOrUpdate(Question question) {
@@ -145,7 +147,10 @@ public class QuestionService {
 
             QuestionExample questionExample = new QuestionExample();
             questionExample.createCriteria().andIdEqualTo(question.getId());
-            questionMapper.updateByExampleSelective(updateQuestion, questionExample);
+            int i = questionMapper.updateByExampleSelective(updateQuestion, questionExample);
+            if(i != 1) {
+                throw new CustomizeException(ECustomizeErrorCode.QUESTION_NOT_FOUND);
+            }
         }
     }
 }
