@@ -130,6 +130,27 @@
                     </dependency>
                 </dependencies>
             </plugin>
+
+            <!--
+                使用标准 Maven 命令行属性将参数传递给目标
+                mvn -Dmybatis.generator.overwrite=true mybatis-generator:generate
+            -->
+            <plugin>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.h2database</groupId>
+                        <artifactId>h2</artifactId>
+                        <version>1.4.199</version>
+                    </dependency>
+                </dependencies>
+                <!--覆盖已有文件-->
+                <configuration>
+                    <overwrite>true</overwrite>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

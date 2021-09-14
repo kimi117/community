@@ -6,7 +6,6 @@ import com.example.life_community.model.User;
 import com.example.life_community.provider.GitHubProvider;
 import com.example.life_community.provider.GiteeProvider;
 import com.example.life_community.provider.GiteeUser;
-import com.example.life_community.mapper.UserMapper;
 import com.example.life_community.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -6,7 +6,9 @@ import com.example.life_community.dto.QuestionDTO;
 import com.example.life_community.mapper.QuestionMapper;
 import com.example.life_community.mapper.UserMapper;
 import com.example.life_community.model.Question;
+import com.example.life_community.model.QuestionExample;
 import com.example.life_community.model.User;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class QuestionService {
     public PaginationDTO list(Integer page, Integer size) {
 
         PaginationDTO paginationDTO = new PaginationDTO();
-        Integer totalCount = questionMapper.count();// 查找数据库获取总数
+        Integer totalCount = (int) questionMapper.countByExample(new QuestionExample());// 查找数据库获取总数
 
         Integer totalPage;
         // 计算总页码
@@ -43,11 +45,13 @@ public class QuestionService {
 
         Integer offSet = size * (page - 1);
 
-        List<Question> questionList = questionMapper.list(offSet, size);
+//        List<Question> questionList = questionMapper.selectByExample(new QuestionExample());
+        List<Question> questionList = questionMapper.selectByExampleWithRowbounds(new QuestionExample(), new RowBounds(offSet, size));
+
         List<QuestionDTO> questionDTOList = new ArrayList<QuestionDTO>();
 
         for (Question question : questionList) {
-            User user = userMapper.findById(question.getCreator());
+            User user = userMapper.selectByPrimaryKey(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
 
             // Spring 内置 BenUtils
@@ -62,7 +66,10 @@ public class QuestionService {
 
     public PaginationDTO list(Integer userId, Integer page, Integer size) {
         PaginationDTO paginationDTO = new PaginationDTO();
-        Integer totalCount = questionMapper.countByUserId(userId);// 查找数据库获取总数
+//        Integer totalCount = questionMapper.countByUserId(userId);// 查找数据库获取总数
+        QuestionExample questionExample = new QuestionExample();
+        questionExample.createCriteria().andCreatorEqualTo(userId);
+        Integer totalCount = (int) questionMapper.countByExample(questionExample);// 查找数据库获取总数
 
         Integer totalPage;
         // 计算总页码
@@ -80,11 +87,15 @@ public class QuestionService {
 
         Integer offSet = size * (page - 1);
 
-        List<Question> questionList = questionMapper.listByUserId(userId, offSet, size);
+//        List<Question> questionList = questionMapper.listByUserId(userId, offSet, size);
+        QuestionExample example = new QuestionExample();
+        example.createCriteria().andCreatorEqualTo(userId);
+        List<Question> questionList = questionMapper.selectByExampleWithRowbounds(questionExample, new RowBounds(offSet, size));
+
         List<QuestionDTO> questionDTOList = new ArrayList<QuestionDTO>();
 
         for (Question question : questionList) {
-            User user = userMapper.findById(question.getCreator());
+            User user = userMapper.selectByPrimaryKey(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
 
             // Spring 内置 BenUtils
@@ -98,7 +109,7 @@ public class QuestionService {
     }
 
     public QuestionDTO getById(Integer id) {
-        Question question  = questionMapper.getById(id);
+        Question question  = questionMapper.selectByPrimaryKey(id);
         if(question != null) {
 
             QuestionDTO questionDTO = new QuestionDTO();
@@ -106,7 +117,7 @@ public class QuestionService {
             System.out.println("lzb questionDTO：" + JSON.toJSONString(questionDTO));
 
             // 获取 User
-            User user = userMapper.findById(question.getCreator());
+            User user = userMapper.selectByPrimaryKey(question.getCreator());
             questionDTO.setUser(user);
 
             return questionDTO;
@@ -122,12 +133,19 @@ public class QuestionService {
             System.out.println("新增");
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(System.currentTimeMillis());
-            questionMapper.create(question);
+            questionMapper.insert(question);
         } else {
             // 更新
             System.out.println("修改");
-            question.setGmtModified(System.currentTimeMillis());
-            questionMapper.update(question);
+            Question updateQuestion = new Question();
+            updateQuestion.setGmtModified(System.currentTimeMillis());
+            updateQuestion.setTitle(question.getTitle());
+            updateQuestion.setDescription(question.getDescription());
+            updateQuestion.setTag(question.getTag());
+
+            QuestionExample questionExample = new QuestionExample();
+            questionExample.createCriteria().andIdEqualTo(question.getId());
+            questionMapper.updateByExampleSelective(updateQuestion, questionExample);
         }
     }
 }
