@@ -74,6 +74,7 @@ public class AuthorizeController {
             // 当登录成功后，将获取到的用户信息及生成 Token 存储到数据库
             // 并 Token 存储 Cookie
             response.addCookie(new Cookie("loginToken", token));
+            System.out.println("生成 cookie");
 
             return "redirect:/";
             // 登录成功，写 Cookie 和 Session

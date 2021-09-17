@@ -27,12 +27,13 @@ public class SessionInterceptor implements HandlerInterceptor {
         if(cookies!=null && cookies.length>0) {
             for (Cookie cookie : cookies) {
                 if(cookie.getName().equals("loginToken")) {
+                    System.out.println("interceptor 获取到 cookie logintoken");
                     String token = cookie.getValue();
 
                     UserExample userExample = new UserExample();
                     userExample.createCriteria().andTokenEqualTo(token);
                     List<User> userList = userMapper.selectByExample(userExample);
-                    System.out.println("userList JSON：" + JSON.toJSONString(userList));
+                    System.out.println("prHandle userList JSON：" + JSON.toJSONString(userList));
                     if(userList != null && userList.size() > 0){
                         request.getSession().setAttribute("user", userList.get(0));
                     }
