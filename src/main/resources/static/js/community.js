@@ -5,6 +5,11 @@ function post() {
     var commentContent = $("#comment_content").val();
     console.log("commentContent = " + commentContent);
 
+    if (!commentContent) {
+        alert("请填写回复内容");
+        return;
+    }
+
     $.ajax({
         type: 'POST',
         url: "/comment",
@@ -16,7 +21,7 @@ function post() {
         }),
         success: function (response) {
             if(response.code == 200) {
-                $("#comment_section").hide();
+                window.location.reload();
             } else {
                 if(response.code == 2003) {
                     var isAccepted = confirm(response.message);
@@ -25,7 +30,7 @@ function post() {
                         window.localStorage.setItem("closable", true);
                     }
                 } else {
-                    alert('ERROR');
+                    alert(response.message);
                 }
             }
         },

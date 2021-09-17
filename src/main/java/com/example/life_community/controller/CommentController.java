@@ -7,6 +7,7 @@ import com.example.life_community.exception.ECustomizeErrorCode;
 import com.example.life_community.model.Comment;
 import com.example.life_community.model.User;
 import com.example.life_community.service.CommentService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +38,11 @@ public class CommentController {
         User user = (User) request.getSession().getAttribute("user");
         if(user == null) {
             return ResultDTO.errorOf(ECustomizeErrorCode.NO_LOGIN);
+        }
+
+        // StringUtils 引用 apache commons lang
+        if(commentDTO==null || StringUtils.isEmpty(commentDTO.getContent())) {
+            return ResultDTO.errorOf(ECustomizeErrorCode.COMTENT_IS_EMPTY);
         }
 
         Comment comment = new Comment();
