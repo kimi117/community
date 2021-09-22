@@ -1,8 +1,8 @@
 package com.example.life_community.controller;
 
-import com.example.life_community.dto.CommentCreateDTO;
 import com.example.life_community.dto.CommentDTO;
 import com.example.life_community.dto.QuestionDTO;
+import com.example.life_community.enums.CommentTypeEnum;
 import com.example.life_community.service.CommentService;
 import com.example.life_community.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +26,18 @@ public class QuestionController {
     public String question(@PathVariable(name = "id")Long id, Model model) {
         // 问题信息
         QuestionDTO questionDTO = questionService.getById(id.intValue());
-        List<CommentDTO> commentDTOList = commentService.listByQuestionId(id);
+
+        List<QuestionDTO> relatedQuestionList = questionService.selectReleated(questionDTO);
+
+        List<CommentDTO> commentDTOList = commentService.listByTargetId(id, CommentTypeEnum.QUESTION);
 
         // 累加阅读数
         questionService.incView(id.intValue());
 
         model.addAttribute("questionDTO", questionDTO);
         model.addAttribute("commentDTOList", commentDTOList);
+        model.addAttribute("relatedQuestionList", relatedQuestionList);
+        System.out.println("relatedQuestionList：" + relatedQuestionList);
         return "question";
     }
 

@@ -72,6 +72,44 @@ body {
     margin-top: 25px;
 }
 
+.menu .active {
+    color: #2e6da4;
+}
+
+.sub-comments {
+    margin-top: 10px;
+    border: 1px solid #eeeeee;
+    padding-top: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.sub-comments .btn {
+    margin: 10px 0;
+}
+
+.question-tag {
+    margin-right: 5px;
+}
+
+.question-img {
+    width: 100px;
+}
+
+.publish-tag-tab {
+    display: none;
+    margin-top: 10px;
+    padding-top: 15px;
+}
+
+.publish-tag-tab .label-info {
+    margin-right: 10px;
+    white-space: normal;
+    margin: 10px 10px;
+    display: inline-block;
+}
+
+
 
 
 
