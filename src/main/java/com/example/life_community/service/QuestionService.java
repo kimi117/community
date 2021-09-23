@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +34,7 @@ public class QuestionService {
 
     public PaginationDTO list(Integer page, Integer size) {
 
-        PaginationDTO paginationDTO = new PaginationDTO();
+        PaginationDTO<QuestionDTO> paginationDTO = new PaginationDTO<QuestionDTO>();
         Integer totalCount = (int) questionMapper.countByExample(new QuestionExample());// 查找数据库获取总数
 
         Integer totalPage;
@@ -71,12 +70,12 @@ public class QuestionService {
             questionDTOList.add(questionDTO);
         }
 
-        paginationDTO.setQuestionDTOList(questionDTOList);
+        paginationDTO.setData(questionDTOList);
         return paginationDTO;
     }
 
     public PaginationDTO list(Integer userId, Integer page, Integer size) {
-        PaginationDTO paginationDTO = new PaginationDTO();
+        PaginationDTO<QuestionDTO> paginationDTO = new PaginationDTO<QuestionDTO>();
 //        Integer totalCount = questionMapper.countByUserId(userId);// 查找数据库获取总数
         QuestionExample questionExample = new QuestionExample();
         questionExample.createCriteria().andCreatorEqualTo(userId);
@@ -115,7 +114,7 @@ public class QuestionService {
             questionDTOList.add(questionDTO);
         }
 
-        paginationDTO.setQuestionDTOList(questionDTOList);
+        paginationDTO.setData(questionDTOList);
         return paginationDTO;
     }
 

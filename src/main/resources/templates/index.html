@@ -29,7 +29,7 @@
                 <h2> <span class="glyphicon glyphicon-list" aria-hidden="true"></span>  发现</h2>
                 <hr/>
 
-                <div class="media" th:each="question : ${paginationDTO.questionDTOList}">
+                <div class="media" th:each="question : ${paginationDTO.data}">
                     <div class="media-left">
                         <a href="#">
                             <img class="media-object img-circle" th:src="${question.user.avatarUrl}" src="https://images.pexels.com/photos/5081914/pexels-photo-5081914.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260" alt="...">

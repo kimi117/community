@@ -12,6 +12,9 @@
 [Lombok](https://projectlombok.org/)  
 [PostMan](https://www.postman.com/downloads/?utm_source=postman-home)
 [MomentJS](http://momentjs.cn/)
+[Editor.md](http://editor.md.ipandao.com/#download)
+[Editor.md Gitee](https://gitee.com/pandao/editor.md/tree/master)
+[Editor.md HitHub](https://github.com/Run2948/editor.md)
 
 ## Http
 [Okhttp](https://square.github.io/okhttp/)  
@@ -23,6 +26,8 @@
     Ctrl + Alt + P：指定变量抽取为参数
     Ctrl + F11：指定位置设置标签
     Ctrl + Alt + N 前端变量设置
+    Ctrl + F6：指定方法上修改参数
+    
 ```
 
 ```bash

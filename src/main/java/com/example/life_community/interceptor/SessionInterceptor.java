@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.example.life_community.mapper.UserMapper;
 import com.example.life_community.model.User;
 import com.example.life_community.model.UserExample;
+import com.example.life_community.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -19,6 +20,9 @@ public class SessionInterceptor implements HandlerInterceptor {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    NotificationService notificationService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -36,6 +40,8 @@ public class SessionInterceptor implements HandlerInterceptor {
                     System.out.println("prHandle userList JSON：" + JSON.toJSONString(userList));
                     if(userList != null && userList.size() > 0){
                         request.getSession().setAttribute("user", userList.get(0));
+                        Long unreadCount= notificationService.unreadCount(userList.get(0).getId());
+                        request.getSession().setAttribute("unreadCount", unreadCount);
                     }
                     break;
                 }
