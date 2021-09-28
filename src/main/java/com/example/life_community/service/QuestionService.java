@@ -3,6 +3,7 @@ package com.example.life_community.service;
 import com.alibaba.fastjson.JSON;
 import com.example.life_community.dto.PaginationDTO;
 import com.example.life_community.dto.QuestionDTO;
+import com.example.life_community.dto.QuestionQueryDTO;
 import com.example.life_community.exception.CustomizeException;
 import com.example.life_community.exception.ECustomizeErrorCode;
 import com.example.life_community.mapper.QuestionExtMapper;
@@ -32,10 +33,20 @@ public class QuestionService {
     @Autowired
     QuestionExtMapper questionExtMapper;
 
-    public PaginationDTO list(Integer page, Integer size) {
+    public PaginationDTO list(String search, Integer page, Integer size) {
+
+        if(StringUtils.isNotBlank(search)) {
+            String[] tags = StringUtils.split(search, " ");
+            search = Arrays.stream(tags).collect(Collectors.joining("|"));
+        }
+
 
         PaginationDTO<QuestionDTO> paginationDTO = new PaginationDTO<QuestionDTO>();
-        Integer totalCount = (int) questionMapper.countByExample(new QuestionExample());// 查找数据库获取总数
+
+        QuestionQueryDTO questionQueryDTO = new QuestionQueryDTO();
+        questionQueryDTO.setSearch(search);
+        Integer totalCount = questionExtMapper.countBySearch(questionQueryDTO);
+//        Integer totalCount = (int) questionMapper.countByExample(new QuestionExample());// 查找数据库获取总数
 
         Integer totalPage;
         // 计算总页码
@@ -56,7 +67,11 @@ public class QuestionService {
 //        List<Question> questionList = questionMapper.selectByExample(new QuestionExample());
         QuestionExample questionExample = new QuestionExample();
         questionExample.setOrderByClause("GMT_CREATE DESC");
-        List<Question> questionList = questionMapper.selectByExampleWithRowbounds(questionExample, new RowBounds(offSet, size));
+
+        questionQueryDTO.setPage(page);
+        questionQueryDTO.setSize(size);
+        List<Question> questionList = questionExtMapper.selectBySearch(questionQueryDTO);
+//        List<Question> questionList = questionMapper.selectByExampleWithRowbounds(questionExample, new RowBounds(offSet, size));
 
         List<QuestionDTO> questionDTOList = new ArrayList<QuestionDTO>();
 

@@ -4,6 +4,10 @@ import com.example.life_community.dto.FileDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
 
 @Controller
 public class FileController {
@@ -16,15 +20,40 @@ public class FileController {
      * 方式三：
      *  云平台（对象存储）
      * @return
+     *
+     * https://www.cnblogs.com/summerday152/p/13969452.html#%E5%88%A9%E7%94%A8spirngboot%E5%AE%9E%E7%8E%B0%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%8A%9F%E8%83%BD
      */
     @PostMapping("/file/upload")
     @ResponseBody
-    public FileDTO uploadImg() {
-        System.out.println("access uploadImg");
+    public FileDTO uploadImg(MultipartFile file) {
+        String fileName;
         FileDTO fileDTO = new FileDTO();
-        fileDTO.setSuccess(1);
-        fileDTO.setMessage("");
-        fileDTO.setUrl("/images/img1.jpg");
+        System.out.println("access uploadImg");
+        try {
+            fileName = file.getOriginalFilename();
+            File newFile = new File("E:/2021_idea_workspace/demo/life_community/src/main/resources/upload_file/" + fileName);
+            if(!newFile.getParentFile().exists()) {
+                newFile.getParentFile().mkdirs();
+            }
+            if(!newFile.exists()) {
+                newFile.createNewFile();
+            }
+
+            file.transferTo(newFile);
+
+
+
+
+            fileDTO.setSuccess(1);
+            fileDTO.setMessage("SUCCESS");
+            fileDTO.setUrl("E:/2021_idea_workspace/demo/life_community/src/main/resources/upload_file/" + fileName);
+            return fileDTO;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        fileDTO.setSuccess(101);
+        fileDTO.setMessage("ERROR");
+        fileDTO.setUrl(null);
         return fileDTO;
     }
 
